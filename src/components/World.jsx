@@ -62,7 +62,7 @@ function generateItemsData() {
     return data
 }
 
-export default function World() {
+export default function World({ updateEngine, playHoverSound }) {
     const worldRef = useRef(null)
     const viewportRef = useRef(null)
     const itemRefs = useRef([])
@@ -120,6 +120,9 @@ export default function World() {
 
             // Smooth Velocity
             state.velocity += (state.targetSpeed - state.velocity) * 0.1
+
+            // AUDIO MODULATION
+            if (updateEngine) updateEngine(state.velocity)
 
             // Update HUD ~every 10 frames to avoid over-rendering
             if (frameCount % 10 === 0) {
@@ -199,7 +202,7 @@ export default function World() {
             window.removeEventListener('mousemove', handleMouseMove)
             lenis.destroy()
         }
-    }, [itemsData])
+    }, [itemsData, updateEngine])
 
     return (
         <>
@@ -224,6 +227,7 @@ export default function World() {
                                     key={`card-${i}`}
                                     className="item"
                                     ref={(el) => { itemRefs.current[i] = el }}
+                                    onMouseEnter={playHoverSound}
                                 >
                                     <Card
                                         id={item.cardId}
